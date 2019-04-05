@@ -68,6 +68,16 @@ export default {
       )
     );
   },
+  getFirstMonday(date) {
+    var firstDay = this.getFirstDayOfMonth(date);
+    return new Date(
+      firstDay.setDate(
+        firstDay.getDate()
+        - firstDay.getDay()
+        + 1
+      )
+    );
+  },
   getFirstDayOfMonth(date) {
     return new Date(
       date.getFullYear(),
