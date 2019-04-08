@@ -251,23 +251,6 @@
 		},
 
 		watch: {
-			// isOpen(value) {
-			// 	if (this.screenSize !== 'desktop') {
-			// 		const bodyClassList = document.querySelector('body').classList;
-
-			// 		if (value) {
-			// 			bodyClassList.add('-overflow-hidden');
-			// 			setTimeout(() => {
-			// 				let swiperWrapper = document.getElementById('swiperWrapper')
-			// 				let monthHeihgt = document.querySelector('.datepicker__month').offsetHeight
-			// 				swiperWrapper.scrollTop = this.activeMonthIndex * monthHeihgt
-			// 			}, 100)
-			// 		}
-			// 		else {
-			// 			bodyClassList.remove('-overflow-hidden');
-			// 		}
-			// 	}
-			// },
 			isOpen(value) {
 				if (this.screenSize !== 'desktop') {
 					const bodyClassList = document.querySelector('body').classList;
@@ -408,47 +391,9 @@
 				else return
 			},
 
-			// renderNextMonth: throttle(function throttleRenderNextMonth() {
-			// 	if (this.activeMonthIndex < this.months.length - 2) {
-			// 		this.activeMonthIndex++;
-			// 		return
-			// 	}
-
-			// 	let firstDayOfLastMonth;
-
-			// 	if (this.screenSize !== 'desktop') {
-			// 		firstDayOfLastMonth = this.months[this.months.length - 1].days
-			// 			.filter((day) => day.belongsToThisMonth === true);
-			// 	} else {
-			// 		firstDayOfLastMonth = this.months[this.activeMonthIndex + 1].days
-			// 			.filter((day) => day.belongsToThisMonth === true);
-			// 	}
-
-			// 	if (this.endDate !== Infinity) {
-			// 		if (fecha.format(firstDayOfLastMonth[0].date, 'YYYYMM') ==
-			// 			fecha.format(new Date(this.endDate), 'YYYYMM')) {
-			// 			return
-			// 		}
-			// 	}
-
-			// 	this.createMonth(
-			// 		this.getNextMonth(
-			// 			firstDayOfLastMonth[0].date
-			// 		)
-			// 	);
-
-			// 	this.activeMonthIndex++;
-			// }, 200),
-
 			renderNextMonth() {
 				let firstDayOfLastMonth;
-				// if (this.screenSize !== 'desktop') {
-				//   firstDayOfLastMonth = this.months[this.months.length - 1].days
-				//     .filter((day) => day.belongsToThisMonth === true);
-				// } else {
-				//   firstDayOfLastMonth = this.months[this.activeMonthIndex + 1].days
-				//     .filter((day) => day.belongsToThisMonth === true);
-				// }
+
 				firstDayOfLastMonth = this.months[this.months.length - 1].days
 					.filter((day) => day.belongsToThisMonth === true);
 				if (this.endDate !== Infinity) {
@@ -486,23 +431,6 @@
 			getMonth(date) {
 				return this.i18n["month-names"][fecha.format(date, 'M') - 1] + (this.showYear ? fecha.format(date, ' YYYY') : '');
 			},
-
-
-			// createMonth(date) {
-			// 	const firstDay = this.getFirstDay(date, this.firstDayOfWeek);
-			// 	let month = {
-			// 		days: []
-			// 	};
-
-			// 	for (let i = 0; i < 42; i++) {
-			// 		month.days.push({
-			// 			date: this.addDays(firstDay, i),
-			// 			belongsToThisMonth: this.addDays(firstDay, i).getMonth() === date.getMonth(),
-			// 			isInRange: false,
-			// 		});
-			// 	}
-			// 	this.months.push(month);
-			// },
 
 			createMonth(date) {
 				const firstMonday = this.getFirstMonday(date);
@@ -544,27 +472,7 @@
 					return D + ['th', 'st', 'nd', 'rd'][D % 10 > 3 ? 0 : (D - D % 10 !== 10) * D % 10];
 				}
 			};
-			// if (this.checkIn &&
-			// 	(this.getMonthDiff(this.getNextMonth(new Date(this.startDate)), this.checkIn) > 0 ||
-			// 		this.getMonthDiff(this.startDate, this.checkIn) > 0)) {
-			// 	this.createMonth(new Date(this.startDate));
-			// 	const count = this.getMonthDiff(this.startDate, this.checkIn)
-			// 	let nextMonth = new Date(this.startDate)
-			// 	for (let i = 0; i <= count; i++) {
-			// 		let tempNextMonth = this.getNextMonth(nextMonth)
-			// 		this.createMonth(tempNextMonth)
-			// 		nextMonth = tempNextMonth
-			// 	}
-			// 	if (this.checkOut && this.getMonthDiff(this.checkIn, this.checkOut) > 0) {
-			// 		this.createMonth(this.getNextMonth(nextMonth))
-			// 		this.activeMonthIndex = 1
-			// 	}
-			// 	this.activeMonthIndex += count
-			// } else {
-			// 	this.createMonth(new Date(this.startDate));
-			// 	this.createMonth(this.getNextMonth(new Date(this.startDate)));
-			// }
-			// this.parseDisabledDates();
+			
 			this.createMonth(new Date(this.startDate));
 			if (!this.startingDateValue && !this.endingDateValue) {
 				//if checkin & checkout dates are not set
