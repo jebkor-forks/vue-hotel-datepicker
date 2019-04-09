@@ -95,6 +95,11 @@
                   :checkOut='checkOut'
                   :currentDateStyle='currentDateStyle'
                 )
+            .search--mobile(
+              @click='mobileSearch' type="button"
+              v-show='screenSize == "smartphone" && (checkIn && checkOut)'
+              v-text='searchText'
+            )
             .next--mobile(
               @click='renderMultipleMonth(3)' type="button"
               v-text='`${i18n["show-more"]}`'
@@ -222,6 +227,10 @@
 			displayClearButton: {
 				default: true,
 				type: Boolean,
+			},
+			searchText: {
+				default: false,
+				type: String
 			}
 		},
 
@@ -273,7 +282,7 @@
 					this.show = true;
 					this.parseDisabledDates();
 					this.reRender()
-					this.isOpen = false;
+					this.isOpen = true;
 				}
 
 				this.$emit("check-out-changed", newDate)
@@ -330,6 +339,7 @@
 				this.$emit('height-changed');
 			},
 
+
 			reRender() {
 				this.show = false
 				this.$nextTick(() => {
@@ -366,7 +376,9 @@
 			},
 
 			handleDayClick(event) {
-
+				/**
+				 * When using the calendar on mobile, there should be a button instead of searching when seeting the checkout date (HomeAway)
+				 */
 				if (this.checkIn == null && this.singleDaySelection == false) {
 					this.checkIn = event.date;
 				} else if (this.singleDaySelection == true) {
@@ -375,13 +387,19 @@
 				}
 				else if (this.checkIn !== null && this.checkOut == null) {
 					this.checkOut = event.date;
+					
+					this.$emit('desktop-search', this.screenSize)
 				}
 				else {
-					this.checkOut = null;
+					this.checkOut = null
 					this.checkIn = event.date;
 				}
 
 				this.nextDisabledDate = event.nextDisabledDate
+			},
+
+			mobileSearch() {
+				this.$emit('mobile-search', this.screenSize)
 			},
 
 			renderPreviousMonth() {
@@ -472,13 +490,13 @@
 					return D + ['th', 'st', 'nd', 'rd'][D % 10 > 3 ? 0 : (D - D % 10 !== 10) * D % 10];
 				}
 			};
-			
+
 			this.createMonth(new Date(this.startDate));
 			if (!this.startingDateValue && !this.endingDateValue) {
 				//if checkin & checkout dates are not set
 				this.createMonth(this.getNextMonth(new Date(this.startDate)));
 				if (this.screenSize !== 'desktop') {
-					this.renderMultipleMonth(12);
+					this.renderMultipleMonth(24);
 				}
 			}
 			else {
@@ -1045,5 +1063,35 @@ $extra-small-screen: "(max-width: 23em)";
 
 .next--mobile {
 	-webkit-appearance: inherit !important;
+}
+
+
+.search--mobile {
+	position: fixed;
+	margin: 0 auto;
+	color: #fff;
+    z-index: 1002;
+    bottom: 90px;
+    background-color: #0085ad;
+    min-width: 150px;
+    text-align: center;
+    padding: 17px 5px;
+    font-size: 13px;
+    border-radius: 3px;
+    min-height: 48px;
+    cursor: pointer;
+	right: 0;
+	left: 0;
+	margin: 0 20px;
+	-webkit-appearance: none !important;
+
+	&:hover {
+		background-color: #006684;
+	}
+
+	&:focus {
+		box-shadow: 0 0 0 0.25rem rgba(0, 133, 173, 0.3);
+    	outline: none;
+	}
 }
 </style>
