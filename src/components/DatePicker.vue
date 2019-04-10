@@ -100,10 +100,6 @@
               v-show='screenSize == "smartphone" && (checkIn && checkOut)'
               v-text='searchText'
             )
-            .next--mobile(
-              @click='renderMultipleMonth(3)' type="button"
-              v-text='`${i18n["show-more"]}`'
-            )
 </template>
 
 <script>
@@ -121,8 +117,7 @@
 		'day-names': ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'],
 		'check-in': 'Check-in',
 		'check-out': 'Check-out',
-		'month-names': ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-		'show-more': 'More'
+		'month-names': ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 	};
 
 	export default {
@@ -375,6 +370,14 @@
 				}
 			},
 
+			setCheckIn(date) {
+				this.checkIn = date;
+			},
+
+			setCheckOut(date) {
+				this.checkOut = date;
+			},
+
 			handleDayClick(event) {
 				/**
 				 * When using the calendar on mobile, there should be a button instead of searching when seeting the checkout date (HomeAway)
@@ -432,14 +435,6 @@
 				for (let i = 1; i <= count; i++) {
 					this.renderNextMonth();
 				}
-			},
-
-			setCheckIn(date) {
-				this.checkIn = date;
-			},
-
-			setCheckOut(date) {
-				this.checkOut = date;
 			},
 
 			getDay(date) {
@@ -520,6 +515,7 @@
 				this.emitHeighChangeEvent();
 			});
 		},
+
 
 		destroyed() {
 			window.removeEventListener('touchstart', this.handleTouchStart);
@@ -1040,7 +1036,6 @@ $extra-small-screen: "(max-width: 23em)";
 }
 
 // Modifiers
-
 .-overflow-hidden {
 	overflow: hidden;
 }
@@ -1061,28 +1056,23 @@ $extra-small-screen: "(max-width: 23em)";
 	}
 }
 
-.next--mobile {
-	-webkit-appearance: inherit !important;
-}
-
-
 .search--mobile {
-	position: fixed;
-	margin: 0 auto;
+	box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.25);
 	color: #fff;
-    z-index: 1002;
-    bottom: 90px;
-    background-color: #0085ad;
-    min-width: 150px;
-    text-align: center;
-    padding: 17px 5px;
-    font-size: 13px;
-    border-radius: 3px;
-    min-height: 48px;
-    cursor: pointer;
-	right: 0;
 	left: 0;
 	margin: 0 20px;
+	position: fixed;
+	right: 0;
+    background-color: #0085ad;
+    border-radius: 3px;
+    bottom: 20px;
+    cursor: pointer;
+    font-size: 13px;
+    min-height: 48px;
+    min-width: 150px;
+    padding: 17px 5px;
+    text-align: center;
+    z-index: 1002;
 	-webkit-appearance: none !important;
 
 	&:hover {
