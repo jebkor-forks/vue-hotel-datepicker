@@ -445,6 +445,14 @@
 				return this.i18n["month-names"][fecha.format(date, 'M') - 1] + (this.showYear ? fecha.format(date, ' YYYY') : '');
 			},
 
+			compareMonths(d1, d2) {
+				var months;
+				months = (d2.getFullYear() - d1.getFullYear()) * 12;
+				months -= d1.getMonth() + 1;
+				months += d2.getMonth();
+				return months <= 0 ? 0 : months;
+			},
+
 			createMonth(date) {
 				const firstMonday = this.getFirstMonday(date);
 				let month = {
