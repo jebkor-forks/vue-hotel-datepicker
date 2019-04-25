@@ -2,6 +2,8 @@
   .datepicker__wrapper(v-if='show' v-on-click-outside='clickOutside' @blur="clickOutside")
     .datepicker__close-button.-hide-on-desktop(v-if='isOpen' @click='hideDatepicker') ＋
     .datepicker( :class='`${ isOpen ? "datepicker--open" : "datepicker--closed" }`')
+      .datepicker__clear-button(tabindex="0" @click='clearSelection' v-text="'Clear'")
+        
       .-hide-on-desktop
         .datepicker__dummy-wrapper.datepicker__dummy-wrapper--no-border(
           @click='toggleDatepicker' :class="`${isOpen ? 'datepicker__dummy-wrapper--is-active' : ''}`"
@@ -350,6 +352,8 @@
 				this.show = true;
 				this.parseDisabledDates();
 				this.reRender()
+
+				this.$emit('clear-dates')
 			},
 
 			hideDatepicker() {
@@ -694,7 +698,7 @@ $extra-small-screen: "(max-width: 23em)";
 		height: 100%;
 
 		&--no-border.datepicker__dummy-wrapper {
-			margin-top: 15px;
+			margin-top: 45px;
 			border: 0;
 		}
 
@@ -868,7 +872,7 @@ $extra-small-screen: "(max-width: 23em)";
 		}
 
 		@include device($up-to-tablet) {
-			margin-top: 92px;
+			margin-top: 122px;
 			height: calc(100% - 92px);
 			position: absolute;
 			left: 0;
@@ -955,7 +959,7 @@ $extra-small-screen: "(max-width: 23em)";
 			box-shadow: 0 13px 18px -8px rgba($black, 0.07);
 			height: 25px;
 			left: 0;
-			top: 65px;
+			top: 95px;
 			position: absolute;
 			width: 100%;
 		}
@@ -992,18 +996,25 @@ $extra-small-screen: "(max-width: 23em)";
 		background: transparent;
 		border: 0;
 		cursor: pointer;
-		font-size: 25px;
-		font-weight: bold;
-		height: 40px;
+		font-size: 16px;
+		font-weight: bolder;
+		height: auto;
 		margin-bottom: 0;
 		margin-left: 0;
 		margin-right: -2px;
 		margin-top: 4px;
 		padding: 0;
 		position: absolute;
-		right: 0;
-		top: 0;
-		width: 40px;
+		right: 22px;
+		width: auto;
+
+		@media only screen and (max-width: 768px) {
+			top: 15px;
+		}
+
+		@media only screen and (min-width: 768px) {
+			bottom: 20px;	
+		}
 
 		svg {
 			fill: none;
