@@ -1,9 +1,11 @@
 <template lang='pug'>
   .datepicker__wrapper(v-if='show' v-on-click-outside='clickOutside' @blur="clickOutside")
-    .datepicker__close-button.-hide-on-desktop(v-if='isOpen' @click='hideDatepicker') ＋
     .datepicker( :class='`${ isOpen ? "datepicker--open" : "datepicker--closed" }`')
-      .datepicker__clear-button(tabindex="0" @click='clearSelection' v-text="'Clear'")
-        
+      .datepicker__modal-header(v-if="isOpen")
+        .datepicker__clear-button(tabindex="0" @click='clearSelection' v-text="'Clear'")
+        .datepicker__close-button.-hide-on-desktop(@click='hideDatepicker')
+          svg(width="16" height="16" viewBox="0 0 16 16" name="close" class="icon")
+            path(d="M8.882,7.821l6.541-6.541c0.293-0.293,0.293-0.768,0-1.061  c-0.293-0.293-0.768-0.293-1.061,0L7.821,6.76L1.28,0.22c-0.293-0.293-0.768-0.293-1.061,0c-0.293,0.293-0.293,0.768,0,1.061  l6.541,6.541L0.22,14.362c-0.293,0.293-0.293,0.768,0,1.061c0.147,0.146,0.338,0.22,0.53,0.22s0.384-0.073,0.53-0.22l6.541-6.541  l6.541,6.541c0.147,0.146,0.338,0.22,0.53,0.22c0.192,0,0.384-0.073,0.53-0.22c0.293-0.293,0.293-0.768,0-1.061L8.882,7.821z")
       .-hide-on-desktop
         .datepicker__dummy-wrapper.datepicker__dummy-wrapper--no-border(
           @click='toggleDatepicker' :class="`${isOpen ? 'datepicker__dummy-wrapper--is-active' : ''}`"
@@ -247,6 +249,7 @@
 				yUp: null,
 				sortedDisabledDates: null,
 				screenSize: this.handleWindowResize(),
+				scrolledToSelectedDates: false,
 			};
 		},
 
@@ -295,6 +298,34 @@
 					return fecha.format(date, this.format);
 				}
 				return '';
+			},
+
+			scrollToDates() {
+				if (this.screenSize !== 'desktop' && this.isOpen) {
+					let swiperWrapper = document.getElementById("swiperWrapper");
+					let startDate = document.getElementsByClassName('datepicker__month-day--last-day-selected')[0];
+					//scroll to selected dates if set
+
+					if (this.checkIn !== null && this.checkOut !== null) {
+						let startDate = document.querySelector('.square div .datepicker__month-day--first-day-selected');
+						let endDate = document.querySelector('.square div .datepicker__month-day--last-day-selected');
+
+						if (startDate && endDate) {
+							startDate = startDate.parentElement.parentElement; //go to square div to measure offsetTop
+							endDate = endDate.parentElement.parentElement; //go to square div to measure offsetTop
+
+							if (startDate) {
+								if (window.innerHeight < (endDate.offsetTop - startDate.offsetTop)) {
+									swiperWrapper.scrollTop = (endDate.offsetTop + startDate.offsetTop) / 2
+								}
+								else {
+									swiperWrapper.scrollTop = startDate.offsetTop - 80;
+								}
+								this.scrolledToSelectedDates = true;
+							}
+						}
+					}
+				}
 			},
 
 			handleWindowResize() {
@@ -358,6 +389,7 @@
 
 			hideDatepicker() {
 				this.isOpen = false;
+				this.scrolledToSelectedDates = false;
 			},
 
 			showDatepicker() {
@@ -394,7 +426,6 @@
 				}
 				else if (this.checkIn !== null && this.checkOut == null) {
 					this.checkOut = event.date;
-					
 					this.$emit('desktop-search', this.screenSize)
 				}
 				else {
@@ -485,6 +516,13 @@
 			}
 		},
 
+		updated() {
+			this.$nextTick(function () {
+				if (this.checkIn !== null && this.checkOut !== null)
+					this.scrollToDates()
+			});
+		},
+
 		beforeMount() {
 			fecha.i18n = {
 				dayNames: this.i18n['day-names'],
@@ -512,7 +550,7 @@
 				if (this.screenSize !== 'desktop' && monthDiff < 6) {
 					monthDiff = 4;
 				}
-				this.renderMultipleMonth(monthDiff + 2);
+				this.renderMultipleMonth(24);
 				this.activeMonthIndex = monthDiff;
 			}
 			this.parseDisabledDates();
@@ -625,8 +663,8 @@ $extra-small-screen: "(max-width: 23em)";
 		background: white;
 
 		&:after {
-			background: transparent url("ic-arrow-right-green.regular.svg") no-repeat
-				center / 8px;
+			background: transparent url("ic-arrow-right-green.regular.svg")
+				no-repeat center / 8px;
 			transform: rotate(90deg);
 			content: "";
 			position: absolute;
@@ -647,6 +685,7 @@ $extra-small-screen: "(max-width: 23em)";
 		max-height: 900px;
 
 		@include device($up-to-tablet) {
+			padding-bottom: 90px;
 			box-shadow: none;
 			height: 100%;
 			left: 0;
@@ -664,8 +703,8 @@ $extra-small-screen: "(max-width: 23em)";
 		display: inline-block;
 		width: 100%;
 		height: 48px;
-		background: $white url("calendar_icon.regular.svg") no-repeat 17px center /
-			16px;
+		background: $white url("calendar_icon.regular.svg") no-repeat 17px
+			center / 16px;
 	}
 
 	&__input {
@@ -698,7 +737,7 @@ $extra-small-screen: "(max-width: 23em)";
 		height: 100%;
 
 		&--no-border.datepicker__dummy-wrapper {
-			margin-top: 45px;
+			margin-top: 15px;
 			border: 0;
 		}
 
@@ -833,8 +872,8 @@ $extra-small-screen: "(max-width: 23em)";
 	}
 
 	&__month-button {
-		background: transparent url("ic-arrow-right-green.regular.svg") no-repeat
-			center center / 8px;
+		background: transparent url("ic-arrow-right-green.regular.svg")
+			no-repeat center center / 8px;
 		cursor: pointer;
 		display: inline-block;
 		height: 60px;
@@ -872,7 +911,7 @@ $extra-small-screen: "(max-width: 23em)";
 		}
 
 		@include device($up-to-tablet) {
-			margin-top: 122px;
+			margin-top: 160px;
 			height: calc(100% - 92px);
 			position: absolute;
 			left: 0;
@@ -883,6 +922,7 @@ $extra-small-screen: "(max-width: 23em)";
 			display: flex;
 			flex-direction: column;
 			justify-content: flex-start;
+			padding-bottom: 90px;
 		}
 
 		&::before {
@@ -959,7 +999,7 @@ $extra-small-screen: "(max-width: 23em)";
 			box-shadow: 0 13px 18px -8px rgba($black, 0.07);
 			height: 25px;
 			left: 0;
-			top: 95px;
+			top: 135px;
 			position: absolute;
 			width: 100%;
 		}
@@ -974,6 +1014,18 @@ $extra-small-screen: "(max-width: 23em)";
 		text-align: center;
 	}
 
+	&__modal-header {
+		border-bottom: 1px solid #e9ecef;
+		height: auto;
+		padding: 20px;
+
+		@media only screen and (min-width: 768px) {
+			padding: 0;
+			border: 0;
+			height: 0;
+		}
+	}
+
 	&__close-button {
 		appearance: none;
 		background: transparent;
@@ -985,10 +1037,13 @@ $extra-small-screen: "(max-width: 23em)";
 		margin-top: 0;
 		outline: 0;
 		z-index: 10000;
-		position: fixed;
 		left: 7px;
 		top: 5px;
-		transform: rotate(45deg);
+
+		svg {
+			width: 20px;
+			height: 20px;
+		}
 	}
 
 	&__clear-button {
@@ -997,23 +1052,24 @@ $extra-small-screen: "(max-width: 23em)";
 		border: 0;
 		cursor: pointer;
 		font-size: 16px;
-		font-weight: bolder;
+		font-weight: 600;
 		height: auto;
 		margin-bottom: 0;
 		margin-left: 0;
 		margin-right: -2px;
 		margin-top: 4px;
 		padding: 0;
-		position: absolute;
-		right: 22px;
-		width: auto;
+		float: right;
+		width: 45px;
 
 		@media only screen and (max-width: 768px) {
 			top: 15px;
 		}
 
 		@media only screen and (min-width: 768px) {
-			bottom: 20px;	
+			bottom: 20px;
+			right: 20px;
+			position: absolute;
 		}
 
 		svg {
@@ -1082,16 +1138,16 @@ $extra-small-screen: "(max-width: 23em)";
 	margin: 0 20px;
 	position: fixed;
 	right: 0;
-    background-color: #0085ad;
-    border-radius: 3px;
-    bottom: 20px;
-    cursor: pointer;
-    font-size: 13px;
-    min-height: 48px;
-    min-width: 150px;
-    padding: 17px 5px;
-    text-align: center;
-    z-index: 1002;
+	background-color: #0085ad;
+	border-radius: 3px;
+	bottom: 20px;
+	cursor: pointer;
+	font-size: 13px;
+	min-height: 48px;
+	min-width: 150px;
+	padding: 17px 5px;
+	text-align: center;
+	z-index: 1002;
 	-webkit-appearance: none !important;
 
 	&:hover {
@@ -1100,7 +1156,7 @@ $extra-small-screen: "(max-width: 23em)";
 
 	&:focus {
 		box-shadow: 0 0 0 0.25rem rgba(0, 133, 173, 0.3);
-    	outline: none;
+		outline: none;
 	}
 }
 </style>
