@@ -725,7 +725,7 @@ $extra-small-screen: "(max-width: 23em)";
 
     .datepicker__months {
       &::before {
-        top: 54px;
+        top: 68px;
       }
     }
 
